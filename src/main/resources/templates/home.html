@@ -1,0 +1,3144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitaTrack Pro - Advanced Fitness Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #FF6584;
+            --accent: #42C2FF;
+            --success: #4ADE80;
+            --warning: #F59E0B;
+            --info: #38BDF8;
+            --dark: #1E293B;
+            --light: #F8FAFC;
+            --bg-gradient: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Navigation */
+        nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            font-size: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        .nav-links a i {
+            font-size: 1.1rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 0;
+            width: 200px;
+            display: none;
+            z-index: 10;
+        }
+        
+        .user-dropdown.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--dark);
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background: #F1F5F9;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: #E2E8F0;
+            margin: 0.5rem 0;
+        }
+        
+        /* Page Container */
+        .page-container {
+            flex: 1;
+            padding: 2rem;
+            display: none;
+        }
+        
+        .page-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dashboard Page */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-title {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+        
+        .date-display {
+            color: #64748B;
+            font-weight: 500;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .card-steps::after { background: var(--primary); }
+        .card-calories::after { background: var(--secondary); }
+        .card-water::after { background: var(--accent); }
+        .card-heart::after { background: var(--warning); }
+        .card-sleep::after { background: var(--info); }
+        .card-weight::after { background: var(--success); }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .metric-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .steps-value { color: var(--primary); }
+        .calories-value { color: var(--secondary); }
+        .water-value { color: var(--accent); }
+        .heart-value { color: var(--warning); }
+        .sleep-value { color: var(--info); }
+        .weight-value { color: var(--success); }
+        
+        .progress-container {
+            margin: 1.5rem 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #64748B;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #E2E8F0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-steps { background: var(--primary); }
+        .progress-calories { background: var(--secondary); }
+        .progress-water { background: var(--accent); }
+        .progress-heart { background: var(--warning); }
+        .progress-sleep { background: var(--info); }
+        
+        .metric-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5A52E0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #E2E8F0;
+            color: var(--dark);
+        }
+        
+        .btn-outline:hover {
+            background: #F8FAFC;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #E07C00;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #3ACB70;
+            transform: translateY(-2px);
+        }
+        
+        /* Activity Section */
+        .activity-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .activity-item {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: rgba(241, 245, 249, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: rgba(226, 232, 240, 0.7);
+            transform: translateX(5px);
+        }
+        
+        .activity-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .activity-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .activity-details {
+            font-size: 0.8rem;
+            color: #64748B;
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.3rem;
+        }
+        
+        .activity-calories {
+            font-weight: 700;
+            color: var(--secondary);
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        .activity-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .activity-btn {
+            background: none;
+            border: none;
+            color: #64748B;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .activity-btn:hover {
+            color: var(--primary);
+        }
+        
+        .add-activity-form {
+            margin-top: 1.5rem;
+            background: rgba(241, 245, 249, 0.7);
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            color: #64748B;
+        }
+        
+        .form-input {
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+        }
+        
+        /* Goals Page */
+        .goals-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .goal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .goal-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .goal-progress {
+            margin: 1rem 0;
+        }
+        
+        /* Nutrition Page */
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .nutrition-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .macro-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .macro-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .carbs { background: rgba(74, 222, 128, 0.1); }
+        .protein { background: rgba(108, 99, 255, 0.1); }
+        .fat { background: rgba(245, 158, 11, 0.1); }
+        
+        .macro-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.3rem 0;
+        }
+        
+        .carbs-value { color: var(--success); }
+        .protein-value { color: var(--primary); }
+        .fat-value { color: var(--warning); }
+        
+        .meal-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .meal-item {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: rgba(241, 245, 249, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .meal-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .meal-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .meal-details {
+            font-size: 0.8rem;
+            color: #64748B;
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.3rem;
+        }
+        
+        .meal-calories {
+            font-weight: 700;
+            color: var(--secondary);
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        /* Settings Page */
+        .settings-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-group {
+            margin-bottom: 2rem;
+        }
+        
+        .settings-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        
+        .settings-label {
+            font-weight: 500;
+        }
+        
+        .settings-desc {
+            font-size: 0.8rem;
+            color: #64748B;
+            margin-top: 0.3rem;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E2E8F0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748B;
+        }
+        
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        /* Login Modal */
+        .login-container {
+            text-align: center;
+        }
+        
+        .login-logo {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .login-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .google { background: #DB4437; }
+        .facebook { background: #4267B2; }
+        .apple { background: #000000; }
+        
+        .login-footer {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .login-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .macro-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo" onclick="showPage('dashboard')">
+            <i class="fas fa-heartbeat"></i>
+            <span>VitaTrack Pro</span>
+        </a>
+        
+        <div class="nav-links">
+            <a href="#" class="active" onclick="showPage('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" onclick="showPage('goals')">
+                <i class="fas fa-bullseye"></i>
+                <span>Goals</span>
+            </a>
+            <a href="#" onclick="showPage('nutrition')">
+                <i class="fas fa-utensils"></i>
+                <span>Nutrition</span>
+            </a>
+            <a href="#" onclick="showPage('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </div>
+        
+        <div class="user-profile" onclick="toggleUserDropdown()">
+            <span id="username-display">Hi, Guest</span>
+            <div class="user-avatar">G</div>
+            <div class="user-dropdown" id="user-dropdown">
+                <a href="#" class="dropdown-item" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                <a href="#" class="dropdown-item" onclick="openRegisterModal()">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item" onclick="showPage('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="dropdown-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page-container active">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Today's Overview</h1>
+            <div class="date-display" id="current-date">Monday, June 12, 2023</div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Steps Card -->
+            <div class="metric-card card-steps">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-walking"></i>
+                        <span>Steps</span>
+                    </div>
+                    <i class="fas fa-ellipsis-h" onclick="openMetricSettings('steps')"></i>
+                </div>
+                <div class="metric-value steps-value" id="steps-count">0</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Daily Progress</span>
+                        <span id="steps-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-steps" id="steps-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric-actions">
+                    <button class="btn btn-outline" onclick="openManualEntry('steps')">
+                        <i class="fas fa-pen"></i>
+                        <span>Manual Entry</span>
+                    </button>
+                    <button class="btn btn-primary" id="steps-auto-btn" onclick="toggleAutoTracking('steps')">
+                        <i class="fas fa-sync"></i>
+                        <span>Auto Track</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Calories Card -->
+            <div class="metric-card card-calories">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-fire"></i>
+                        <span>Calories</span>
+                    </div>
+                    <i class="fas fa-ellipsis-h" onclick="openMetricSettings('calories')"></i>
+                </div>
+                <div class="metric-value calories-value" id="calories-count">0</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Daily Progress</span>
+                        <span id="calories-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-calories" id="calories-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric-actions">
+                    <button class="btn btn-outline" onclick="openManualEntry('calories')">
+                        <i class="fas fa-pen"></i>
+                        <span>Manual Entry</span>
+                    </button>
+                    <button class="btn btn-primary" id="calories-auto-btn" onclick="toggleAutoTracking('calories')">
+                        <i class="fas fa-sync"></i>
+                        <span>Auto Track</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Water Card -->
+            <div class="metric-card card-water">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-tint"></i>
+                        <span>Water</span>
+                    </div>
+                    <i class="fas fa-ellipsis-h" onclick="openMetricSettings('water')"></i>
+                </div>
+                <div class="metric-value water-value" id="water-count">0<span style="font-size: 1rem;">L</span></div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Daily Progress</span>
+                        <span id="water-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-water" id="water-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric-actions">
+                    <button class="btn btn-outline" onclick="openManualEntry('water')">
+                        <i class="fas fa-pen"></i>
+                        <span>Manual Entry</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="addWater()">
+                        <i class="fas fa-plus"></i>
+                        <span>Add 250ml</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Heart Rate Card -->
+            <div class="metric-card card-heart">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>Heart Rate</span>
+                    </div>
+                    <i class="fas fa-ellipsis-h" onclick="openMetricSettings('heart')"></i>
+                </div>
+                <div class="metric-value heart-value" id="heart-rate">0<span style="font-size: 1rem;"> BPM</span></div>
+                <div style="margin-top: 1rem;">
+                    <p>Status: <strong id="heart-rate-status">--</strong></p>
+                    <p>Today's avg: <strong id="heart-rate-avg">0 BPM</strong></p>
+                </div>
+                <div class="metric-actions">
+                    <button class="btn btn-outline" onclick="openManualEntry('heart')">
+                        <i class="fas fa-pen"></i>
+                        <span>Manual Entry</span>
+                    </button>
+                    <button class="btn btn-primary" id="heart-auto-btn" onclick="toggleAutoTracking('heart')">
+                        <i class="fas fa-sync"></i>
+                        <span>Auto Track</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Sleep Card -->
+            <div class="metric-card card-sleep">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-moon"></i>
+                        <span>Sleep</span>
+                    </div>
+                    <i class="fas fa-ellipsis-h" onclick="openMetricSettings('sleep')"></i>
+                </div>
+                <div class="metric-value sleep-value" id="sleep-count">0<span style="font-size: 1rem;">h</span></div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Daily Progress</span>
+                        <span id="sleep-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-sleep" id="sleep-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric-actions">
+                    <button class="btn btn-outline" onclick="openManualEntry('sleep')">
+                        <i class="fas fa-pen"></i>
+                        <span>Manual Entry</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="logSleep()">
+                        <i class="fas fa-bed"></i>
+                        <span>Log Sleep</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Weight Card -->
+            <div class="metric-card card-weight">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-weight"></i>
+                        <span>Weight</span>
+                    </div>
+                    <i class="fas fa-ellipsis-h" onclick="openMetricSettings('weight')"></i>
+                </div>
+                <div class="metric-value weight-value" id="weight-count">--<span style="font-size: 1rem;">kg</span></div>
+                <div style="margin-top: 1rem;">
+                    <p>Last week: <strong id="last-weight">-- kg</strong></p>
+                    <p>Change: <strong id="weight-change">--</strong></p>
+                </div>
+                <div class="metric-actions">
+                    <button class="btn btn-outline" onclick="openManualEntry('weight')">
+                        <i class="fas fa-pen"></i>
+                        <span>Manual Entry</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="openWeightTrend()">
+                        <i class="fas fa-chart-line"></i>
+                        <span>View Trend</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity Section -->
+        <div class="activity-section">
+            <div class="section-header">
+                <h2 class="section-title">Today's Activities</h2>
+                <button class="btn btn-primary" onclick="openAddActivity()">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Activity</span>
+                </button>
+            </div>
+            
+            <ul class="activity-list" id="activity-list">
+                <!-- Activities will be added here -->
+            </ul>
+        </div>
+        
+        <!-- Weekly Summary -->
+        <div class="activity-section">
+            <div class="section-header">
+                <h2 class="section-title">Weekly Summary</h2>
+                <div class="date-range">Jun 5 - Jun 11, 2023</div>
+            </div>
+            
+            <div class="dashboard-grid" style="margin-top: 1rem;">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">
+                            <i class="fas fa-walking"></i>
+                            <span>Total Steps</span>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="weekly-steps">42,850</div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Weekly Goal</span>
+                            <span>86%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress progress-steps" style="width: 86%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">
+                            <i class="fas fa-fire"></i>
+                            <span>Calories Burned</span>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="weekly-calories">8,750</div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Weekly Goal</span>
+                            <span>78%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress progress-calories" style="width: 78%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>Workouts</span>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="weekly-workouts">5</div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Weekly Goal</span>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress progress-water" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Goals Page -->
+    <div id="goals" class="page-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Your Goals</h1>
+            <button class="btn btn-primary" onclick="openAddGoal()">
+                <i class="fas fa-plus"></i>
+                <span>Add Goal</span>
+            </button>
+        </div>
+        
+        <div class="goals-container">
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">
+                        <i class="fas fa-walking" style="color: var(--primary);"></i>
+                        <span>Daily Steps</span>
+                    </div>
+                    <div class="goal-actions">
+                        <i class="fas fa-edit" onclick="editGoal('steps')"></i>
+                        <i class="fas fa-trash" onclick="deleteGoal('steps')"></i>
+                    </div>
+                </div>
+                <div class="metric-value steps-value">10,000</div>
+                <p>Daily step goal to maintain activity</p>
+                <div class="goal-progress">
+                    <div class="progress-label">
+                        <span>Current Progress</span>
+                        <span id="steps-goal-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-steps" id="steps-goal-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">
+                        <i class="fas fa-fire" style="color: var(--secondary);"></i>
+                        <span>Calorie Deficit</span>
+                    </div>
+                    <div class="goal-actions">
+                        <i class="fas fa-edit" onclick="editGoal('calories')"></i>
+                        <i class="fas fa-trash" onclick="deleteGoal('calories')"></i>
+                    </div>
+                </div>
+                <div class="metric-value calories-value">500</div>
+                <p>Daily calorie deficit for weight loss</p>
+                <div class="goal-progress">
+                    <div class="progress-label">
+                        <span>Current Progress</span>
+                        <span id="calories-goal-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-calories" id="calories-goal-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">
+                        <i class="fas fa-tint" style="color: var(--accent);"></i>
+                        <span>Water Intake</span>
+                    </div>
+                    <div class="goal-actions">
+                        <i class="fas fa-edit" onclick="editGoal('water')"></i>
+                        <i class="fas fa-trash" onclick="deleteGoal('water')"></i>
+                    </div>
+                </div>
+                <div class="metric-value water-value">2.5<span style="font-size: 1rem;">L</span></div>
+                <p>Daily water consumption goal</p>
+                <div class="goal-progress">
+                    <div class="progress-label">
+                        <span>Current Progress</span>
+                        <span id="water-goal-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-water" id="water-goal-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">
+                        <i class="fas fa-moon" style="color: var(--info);"></i>
+                        <span>Sleep Duration</span>
+                    </div>
+                    <div class="goal-actions">
+                        <i class="fas fa-edit" onclick="editGoal('sleep')"></i>
+                        <i class="fas fa-trash" onclick="deleteGoal('sleep')"></i>
+                    </div>
+                </div>
+                <div class="metric-value sleep-value">8<span style="font-size: 1rem;">h</span></div>
+                <p>Nightly sleep goal for recovery</p>
+                <div class="goal-progress">
+                    <div class="progress-label">
+                        <span>Current Progress</span>
+                        <span id="sleep-goal-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-sleep" id="sleep-goal-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">
+                        <i class="fas fa-dumbbell" style="color: var(--warning);"></i>
+                        <span>Weekly Workouts</span>
+                    </div>
+                    <div class="goal-actions">
+                        <i class="fas fa-edit" onclick="editGoal('workouts')"></i>
+                        <i class="fas fa-trash" onclick="deleteGoal('workouts')"></i>
+                    </div>
+                </div>
+                <div class="metric-value">5</div>
+                <p>Weekly exercise sessions</p>
+                <div class="goal-progress">
+                    <div class="progress-label">
+                        <span>Current Progress</span>
+                        <span>2/5</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-steps" style="width: 40%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="goal-card">
+                <div class="goal-header">
+                    <div class="goal-title">
+                        <i class="fas fa-weight" style="color: var(--success);"></i>
+                        <span>Weight Target</span>
+                    </div>
+                    <div class="goal-actions">
+                        <i class="fas fa-edit" onclick="editGoal('weight')"></i>
+                        <i class="fas fa-trash" onclick="deleteGoal('weight')"></i>
+                    </div>
+                </div>
+                <div class="metric-value weight-value">68<span style="font-size: 1rem;">kg</span></div>
+                <p>Target weight by December</p>
+                <div class="goal-progress">
+                    <div class="progress-label">
+                        <span>Current Progress</span>
+                        <span>72kg (-4kg)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-water" style="width: 66%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Nutrition Page -->
+    <div id="nutrition" class="page-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Nutrition Tracker</h1>
+            <button class="btn btn-primary" onclick="openAddMeal()">
+                <i class="fas fa-plus"></i>
+                <span>Add Meal</span>
+            </button>
+        </div>
+        
+        <div class="nutrition-grid">
+            <div class="nutrition-card">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-utensils"></i>
+                        <span>Today's Nutrition</span>
+                    </div>
+                </div>
+                
+                <div class="macro-grid">
+                    <div class="macro-item carbs">
+                        <i class="fas fa-bread-slice"></i>
+                        <div class="macro-value carbs-value" id="carbs-count">0g</div>
+                        <div>Carbs</div>
+                    </div>
+                    <div class="macro-item protein">
+                        <i class="fas fa-drumstick-bite"></i>
+                        <div class="macro-value protein-value" id="protein-count">0g</div>
+                        <div>Protein</div>
+                    </div>
+                    <div class="macro-item fat">
+                        <i class="fas fa-bacon"></i>
+                        <div class="macro-value fat-value" id="fat-count">0g</div>
+                        <div>Fat</div>
+                    </div>
+                </div>
+                
+                <div class="progress-container" style="margin-top: 1.5rem;">
+                    <div class="progress-label">
+                        <span>Calories</span>
+                        <span id="nutrition-calories-percent">0/2000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress progress-calories" id="nutrition-calories-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nutrition-card">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-clock"></i>
+                        <span>Today's Meals</span>
+                    </div>
+                </div>
+                
+                <ul class="meal-list" id="meal-list">
+                    <!-- Meals will be added here -->
+                </ul>
+            </div>
+            
+            <div class="nutrition-card">
+                <div class="metric-header">
+                    <div class="metric-title">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Macro Distribution</span>
+                    </div>
+                </div>
+                
+                <div style="margin: 1rem 0; text-align: center;">
+                    <canvas id="macro-chart" width="300" height="300"></canvas>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 12px; height: 12px; background: var(--success); border-radius: 50%;"></div>
+                        <span>Carbs</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 12px; height: 12px; background: var(--primary); border-radius: 50%;"></div>
+                        <span>Protein</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 12px; height: 12px; background: var(--warning); border-radius: 50%;"></div>
+                        <span>Fat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Page -->
+    <div id="settings" class="page-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Settings</h1>
+        </div>
+        
+        <div class="settings-container">
+            <div class="settings-group">
+                <h3 class="settings-title">Account Settings</h3>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Profile Information</div>
+                        <div class="settings-desc">Update your name, email, and profile picture</div>
+                    </div>
+                    <button class="btn btn-outline" onclick="openProfileSettings()">
+                        <span>Edit</span>
+                    </button>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Change Password</div>
+                        <div class="settings-desc">Update your account password</div>
+                    </div>
+                    <button class="btn btn-outline" onclick="openChangePassword()">
+                        <span>Change</span>
+                    </button>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Notification Preferences</div>
+                        <div class="settings-desc">Manage how we notify you</div>
+                    </div>
+                    <button class="btn btn-outline" onclick="openNotificationSettings()">
+                        <span>Manage</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3 class="settings-title">App Preferences</h3>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Dark Mode</div>
+                        <div class="settings-desc">Switch between light and dark theme</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Metric Units</div>
+                        <div class="settings-desc">Use metric or imperial units</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="metric-units-toggle" checked onchange="toggleMetricUnits()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Auto Tracking</div>
+                        <div class="settings-desc">Enable automatic activity tracking</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-tracking-toggle" checked onchange="toggleGlobalAutoTracking()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3 class="settings-title">About</h3>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Version</div>
+                        <div class="settings-desc">VitaTrack Pro v1.0.0</div>
+                    </div>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Help & Support</div>
+                        <div class="settings-desc">Get help with the app</div>
+                    </div>
+                    <button class="btn btn-outline" onclick="openHelpCenter()">
+                        <span>Contact</span>
+                    </button>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Privacy Policy</div>
+                        <div class="settings-desc">View our privacy practices</div>
+                    </div>
+                    <button class="btn btn-outline" onclick="openPrivacyPolicy()">
+                        <span>View</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <button class="btn btn-warning" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <p>VitaTrack Pro © 2023 | Real-time fitness monitoring</p>
+    </footer>
+    
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Login to VitaTrack</h3>
+                <button class="close-modal" onclick="closeModal('login-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="login-container">
+                    <div class="login-logo">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="login-title">Welcome Back!</h3>
+                    
+                    <form class="login-form" id="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" placeholder="Enter your password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <span>Login</span>
+                        </button>
+                    </form>
+                    
+                    <div class="social-login">
+                        <div class="social-btn google" onclick="socialLogin('google')">
+                            <i class="fab fa-google"></i>
+                        </div>
+                        <div class="social-btn facebook" onclick="socialLogin('facebook')">
+                            <i class="fab fa-facebook-f"></i>
+                        </div>
+                        <div class="social-btn apple" onclick="socialLogin('apple')">
+                            <i class="fab fa-apple"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="login-footer">
+                        Don't have an account? <a href="#" class="login-link" onclick="openRegisterModal()">Sign up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Register Modal -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Account</h3>
+                <button class="close-modal" onclick="closeModal('register-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="login-container">
+                    <div class="login-logo">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="login-title">Join VitaTrack Pro</h3>
+                    
+                    <form class="login-form" id="register-form">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-input" placeholder="Enter your name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" placeholder="Create a password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-input" placeholder="Confirm your password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <span>Create Account</span>
+                        </button>
+                    </form>
+                    
+                    <div class="login-footer">
+                        Already have an account? <a href="#" class="login-link" onclick="openLoginModal()">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Activity Modal -->
+    <div class="modal" id="activity-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Activity</h3>
+                <button class="close-modal" onclick="closeModal('activity-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="activity-form">
+                    <div class="form-group">
+                        <label class="form-label">Activity Type</label>
+                        <select class="form-input" id="activity-type" required>
+                            <option value="">Select activity</option>
+                            <option value="run">Running</option>
+                            <option value="walk">Walking</option>
+                            <option value="cycle">Cycling</option>
+                            <option value="swim">Swimming</option>
+                            <option value="yoga">Yoga</option>
+                            <option value="gym">Gym Workout</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Duration (minutes)</label>
+                        <input type="number" class="form-input" id="activity-duration" min="1" placeholder="30" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Calories Burned</label>
+                        <input type="number" class="form-input" id="activity-calories" min="1" placeholder="300" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes (optional)</label>
+                        <textarea class="form-input" id="activity-notes" placeholder="Any additional details"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('activity-modal')">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn btn-primary" onclick="saveActivity()">
+                    <span>Save Activity</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Meal Modal -->
+    <div class="modal" id="meal-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Meal</h3>
+                <button class="close-modal" onclick="closeModal('meal-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="meal-form">
+                    <div class="form-group">
+                        <label class="form-label">Meal Type</label>
+                        <select class="form-input" id="meal-type" required>
+                            <option value="">Select meal type</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="snack">Snack</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Meal Name</label>
+                        <input type="text" class="form-input" id="meal-name" placeholder="e.g., Chicken Salad" required>
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Calories</label>
+                            <input type="number" class="form-input" id="meal-calories" min="0" placeholder="300" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Protein (g)</label>
+                            <input type="number" class="form-input" id="meal-protein" min="0" placeholder="25" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Carbs (g)</label>
+                            <input type="number" class="form-input" id="meal-carbs" min="0" placeholder="40" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Fat (g)</label>
+                            <input type="number" class="form-input" id="meal-fat" min="0" placeholder="10" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label class="form-label">Notes (optional)</label>
+                        <textarea class="form-input" id="meal-notes" placeholder="Any additional details"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('meal-modal')">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn btn-primary" onclick="saveMeal()">
+                    <span>Save Meal</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Manual Entry Modal -->
+    <div class="modal" id="manual-entry-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="manual-entry-title">Manual Entry</h3>
+                <button class="close-modal" onclick="closeModal('manual-entry-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="manual-entry-form">
+                    <div class="form-group">
+                        <label class="form-label" id="manual-entry-label">Value</label>
+                        <input type="number" class="form-input" id="manual-entry-value" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('manual-entry-modal')">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn btn-primary" onclick="saveManualEntry()">
+                    <span>Save</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Goal Modal -->
+    <div class="modal" id="goal-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="goal-modal-title">Add New Goal</h3>
+                <button class="close-modal" onclick="closeModal('goal-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="goal-form">
+                    <div class="form-group">
+                        <label class="form-label">Goal Type</label>
+                        <select class="form-input" id="goal-type" required>
+                            <option value="">Select goal type</option>
+                            <option value="steps">Daily Steps</option>
+                            <option value="calories">Calorie Deficit</option>
+                            <option value="water">Water Intake</option>
+                            <option value="sleep">Sleep Duration</option>
+                            <option value="workouts">Weekly Workouts</option>
+                            <option value="weight">Weight Target</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" id="goal-value-label">Target Value</label>
+                        <input type="number" class="form-input" id="goal-value" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Timeframe</label>
+                        <select class="form-input" id="goal-timeframe" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="goal-end-date-group" style="display: none;">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-input" id="goal-end-date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description (optional)</label>
+                        <textarea class="form-input" id="goal-description" placeholder="Describe your goal"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('goal-modal')">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn btn-primary" onclick="saveGoal()">
+                    <span>Save Goal</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Settings Modal -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Profile Settings</h3>
+                <button class="close-modal" onclick="closeModal('profile-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profile-form">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1rem;">
+                            <span id="profile-avatar">G</span>
+                        </div>
+                        <button type="button" class="btn btn-outline" style="display: block; margin: 0 auto;">
+                            <i class="fas fa-camera"></i>
+                            <span>Change Photo</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="profile-name" placeholder="Enter your name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="profile-email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select class="form-input" id="profile-gender">
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-input" id="profile-dob">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Height (cm)</label>
+                        <input type="number" class="form-input" id="profile-height" min="100" max="250" placeholder="170">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('profile-modal')">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn btn-primary" onclick="saveProfile()">
+                    <span>Save Changes</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Settings Modal -->
+    <div class="modal" id="notifications-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Notification Preferences</h3>
+                <button class="close-modal" onclick="closeModal('notifications-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Activity Reminders</div>
+                        <div class="settings-desc">Get reminders to stay active</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="activity-reminders" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Water Reminders</div>
+                        <div class="settings-desc">Get reminders to drink water</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="water-reminders" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Goal Progress</div>
+                        <div class="settings-desc">Get updates on your goal progress</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="goal-progress-notifications" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Weekly Reports</div>
+                        <div class="settings-desc">Receive weekly progress reports</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="weekly-reports" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="settings-label">Promotional Offers</div>
+                        <div class="settings-desc">Receive special offers and updates</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="promotional-offers">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('notifications-modal')">
+                    <span>Cancel</span>
+                </button>
+                <button class="btn btn-primary" onclick="saveNotificationSettings()">
+                    <span>Save Preferences</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Global variables
+        let currentUser = null;
+        let autoTracking = {
+            steps: false,
+            calories: false,
+            heart: false
+        };
+        
+        let metrics = {
+            steps: 0,
+            calories: 0,
+            water: 0,
+            heartRate: 72,
+            sleep: 0,
+            weight: null,
+            lastWeight: null
+        };
+        
+        let goals = {
+            steps: 10000,
+            calories: 2000,
+            water: 2.5,
+            sleep: 8,
+            workouts: 5,
+            weight: 68
+        };
+        
+        let nutrition = {
+            calories: 0,
+            carbs: 0,
+            protein: 0,
+            fat: 0,
+            meals: []
+        };
+        
+        let activities = [];
+        let currentManualEntryType = '';
+        
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize date display
+            updateDateDisplay();
+            
+            // Initialize chart
+            updateMacroChart();
+            
+            // Load sample data
+            loadSampleData();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Start auto tracking simulation
+            simulateRealTimeData();
+        });
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Login form
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                loginUser();
+            });
+            
+            // Register form
+            document.getElementById('register-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                registerUser();
+            });
+            
+            // Goal type change
+            document.getElementById('goal-type').addEventListener('change', function() {
+                updateGoalValueLabel();
+            });
+            
+            // Goal timeframe change
+            document.getElementById('goal-timeframe').addEventListener('change', function() {
+                const endDateGroup = document.getElementById('goal-end-date-group');
+                if (this.value === 'custom') {
+                    endDateGroup.style.display = 'block';
+                } else {
+                    endDateGroup.style.display = 'none';
+                }
+            });
+        }
+        
+        // Update date display
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('current-date').textContent = today.toLocaleDateString('en-US', options);
+        }
+        
+        // Load sample data
+        function loadSampleData() {
+            // Sample activities
+            activities = [
+                { id: 1, type: 'run', name: 'Morning Run', duration: 30, calories: 300, time: '07:30 AM' },
+                { id: 2, type: 'yoga', name: 'Yoga Session', duration: 45, calories: 200, time: '12:15 PM' },
+                { id: 3, type: 'walk', name: 'Evening Walk', duration: 20, calories: 150, time: '06:45 PM' }
+            ];
+            
+            // Sample meals
+            nutrition.meals = [
+                { id: 1, type: 'breakfast', name: 'Oatmeal with Fruits', calories: 350, protein: 12, carbs: 60, fat: 8, time: '08:00 AM' },
+                { id: 2, type: 'lunch', name: 'Chicken Salad', calories: 450, protein: 35, carbs: 20, fat: 25, time: '01:30 PM' },
+                { id: 3, type: 'snack', name: 'Protein Shake', calories: 200, protein: 25, carbs: 10, fat: 5, time: '04:00 PM' }
+            ];
+            
+            // Calculate nutrition totals
+            calculateNutritionTotals();
+            
+            // Update weight
+            metrics.weight = 72;
+            metrics.lastWeight = 74;
+            updateWeightDisplay();
+            
+            // Render activities and meals
+            renderActivities();
+            renderMeals();
+        }
+        
+        // Calculate nutrition totals
+        function calculateNutritionTotals() {
+            nutrition.calories = nutrition.meals.reduce((sum, meal) => sum + meal.calories, 0);
+            nutrition.protein = nutrition.meals.reduce((sum, meal) => sum + meal.protein, 0);
+            nutrition.carbs = nutrition.meals.reduce((sum, meal) => sum + meal.carbs, 0);
+            nutrition.fat = nutrition.meals.reduce((sum, meal) => sum + meal.fat, 0);
+            
+            updateNutritionDisplay();
+        }
+        
+        // Update nutrition display
+        function updateNutritionDisplay() {
+            document.getElementById('carbs-count').textContent = `${nutrition.carbs}g`;
+            document.getElementById('protein-count').textContent = `${nutrition.protein}g`;
+            document.getElementById('fat-count').textContent = `${nutrition.fat}g`;
+            
+            const caloriesPercent = (nutrition.calories / 2000) * 100;
+            document.getElementById('nutrition-calories-percent').textContent = `${nutrition.calories}/2000`;
+            document.getElementById('nutrition-calories-progress').style.width = `${Math.min(caloriesPercent, 100)}%`;
+            
+            updateMacroChart();
+        }
+        
+        // Update macro chart
+        function updateMacroChart() {
+            const ctx = document.getElementById('macro-chart').getContext('2d');
+            
+            // Destroy previous chart if it exists
+            if (window.macroChart) {
+                window.macroChart.destroy();
+            }
+            
+            window.macroChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Carbs', 'Protein', 'Fat'],
+                    datasets: [{
+                        data: [nutrition.carbs, nutrition.protein, nutrition.fat],
+                        backgroundColor: [
+                            'rgba(74, 222, 128, 0.8)',
+                            'rgba(108, 99, 255, 0.8)',
+                            'rgba(245, 158, 11, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(74, 222, 128, 1)',
+                            'rgba(108, 99, 255, 1)',
+                            'rgba(245, 158, 11, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update weight display
+        function updateWeightDisplay() {
+            if (metrics.weight !== null) {
+                document.getElementById('weight-count').textContent = `${metrics.weight}kg`;
+                
+                if (metrics.lastWeight !== null) {
+                    document.getElementById('last-weight').textContent = `${metrics.lastWeight}kg`;
+                    const change = metrics.lastWeight - metrics.weight;
+                    const changeElement = document.getElementById('weight-change');
+                    
+                    if (change > 0) {
+                        changeElement.textContent = `↓ ${change.toFixed(1)}kg`;
+                        changeElement.style.color = 'var(--success)';
+                    } else if (change < 0) {
+                        changeElement.textContent = `↑ ${Math.abs(change).toFixed(1)}kg`;
+                        changeElement.style.color = 'var(--secondary)';
+                    } else {
+                        changeElement.textContent = 'No change';
+                        changeElement.style.color = 'var(--dark)';
+                    }
+                }
+            }
+        }
+        
+        // Render activities
+        function renderActivities() {
+            const activityList = document.getElementById('activity-list');
+            activityList.innerHTML = '';
+            
+            activities.forEach(activity => {
+                const activityItem = document.createElement('li');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-info">
+                        <span class="activity-name">${activity.name}</span>
+                        <div class="activity-details">
+                            <span>${activity.time}</span>
+                            <span>${activity.duration} min</span>
+                        </div>
+                    </div>
+                    <div class="activity-calories">+${activity.calories} cal</div>
+                    <div class="activity-actions">
+                        <button class="activity-btn" onclick="editActivity(${activity.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="activity-btn" onclick="deleteActivity(${activity.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                activityList.appendChild(activityItem);
+            });
+        }
+        
+        // Render meals
+        function renderMeals() {
+            const mealList = document.getElementById('meal-list');
+            mealList.innerHTML = '';
+            
+            nutrition.meals.forEach(meal => {
+                const mealItem = document.createElement('li');
+                mealItem.className = 'meal-item';
+                mealItem.innerHTML = `
+                    <div class="meal-info">
+                        <span class="meal-name">${meal.name}</span>
+                        <div class="meal-details">
+                            <span>${meal.time}</span>
+                            <span>${meal.type.charAt(0).toUpperCase() + meal.type.slice(1)}</span>
+                        </div>
+                    </div>
+                    <div class="meal-calories">${meal.calories} cal</div>
+                    <div class="activity-actions">
+                        <button class="activity-btn" onclick="editMeal(${meal.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="activity-btn" onclick="deleteMeal(${meal.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                mealList.appendChild(mealItem);
+            });
+        }
+        
+        // Simulate real-time data
+        function simulateRealTimeData() {
+            // Steps - simulate walking throughout the day
+            const stepsElement = document.getElementById('steps-count');
+            const stepsProgress = document.getElementById('steps-progress');
+            const stepsPercent = document.getElementById('steps-percent');
+            const stepsGoalProgress = document.getElementById('steps-goal-progress');
+            const stepsGoalPercent = document.getElementById('steps-goal-percent');
+            
+            // Calories - simulate burning
+            const caloriesElement = document.getElementById('calories-count');
+            const caloriesProgress = document.getElementById('calories-progress');
+            const caloriesPercent = document.getElementById('calories-percent');
+            const caloriesGoalProgress = document.getElementById('calories-goal-progress');
+            const caloriesGoalPercent = document.getElementById('calories-goal-percent');
+            
+            // Water - simulate drinking
+            const waterElement = document.getElementById('water-count');
+            const waterProgress = document.getElementById('water-progress');
+            const waterPercent = document.getElementById('water-percent');
+            const waterGoalProgress = document.getElementById('water-goal-progress');
+            const waterGoalPercent = document.getElementById('water-goal-percent');
+            
+            // Heart rate - simulate variability
+            const heartRateElement = document.getElementById('heart-rate');
+            const heartRateStatus = document.getElementById('heart-rate-status');
+            const heartRateAvg = document.getElementById('heart-rate-avg');
+            
+            // Sleep - simulate if not manually set
+            const sleepElement = document.getElementById('sleep-count');
+            const sleepProgress = document.getElementById('sleep-progress');
+            const sleepPercent = document.getElementById('sleep-percent');
+            const sleepGoalProgress = document.getElementById('sleep-goal-progress');
+            const sleepGoalPercent = document.getElementById('sleep-goal-percent');
+            
+            // Starting values
+            let steps = metrics.steps;
+            let calories = metrics.calories;
+            let water = metrics.water;
+            let heartRate = metrics.heartRate;
+            let sleep = metrics.sleep;
+            let heartRateReadings = [];
+            
+            // Update all metrics every second
+            setInterval(() => {
+                // Simulate steps (more active during "daytime")
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                
+                if (autoTracking.steps) {
+                    // Steps increase faster during "active hours" (8am-8pm)
+                    const isActiveTime = hours >= 8 && hours < 20;
+                    const stepsIncrement = isActiveTime ? 
+                        (5 + Math.random() * 10) : 
+                        (1 + Math.random() * 3);
+                    
+                    steps += stepsIncrement;
+                    if (steps > goals.steps) steps = goals.steps;
+                    
+                    stepsElement.textContent = Math.floor(steps).toLocaleString();
+                    const stepsPct = Math.min((steps / goals.steps) * 100, 100);
+                    stepsProgress.style.width = `${stepsPct}%`;
+                    stepsPercent.textContent = `${Math.floor(stepsPct)}%`;
+                    
+                    // Update goal progress
+                    stepsGoalProgress.style.width = `${stepsPct}%`;
+                    stepsGoalPercent.textContent = `${Math.floor(stepsPct)}%`;
+                    
+                    metrics.steps = steps;
+                }
+                
+                if (autoTracking.calories) {
+                    // Calories burn correlates with steps and random activity
+                    calories += stepsIncrement * 0.3 + Math.random() * 0.5;
+                    if (calories > goals.calories) calories = goals.calories;
+                    
+                    caloriesElement.textContent = Math.floor(calories).toLocaleString();
+                    const caloriesPct = Math.min((calories / goals.calories) * 100, 100);
+                    caloriesProgress.style.width = `${caloriesPct}%`;
+                    caloriesPercent.textContent = `${Math.floor(caloriesPct)}%`;
+                    
+                    // Update goal progress
+                    caloriesGoalProgress.style.width = `${caloriesPct}%`;
+                    caloriesGoalPercent.textContent = `${Math.floor(caloriesPct)}%`;
+                    
+                    metrics.calories = calories;
+                }
+                
+                // Water intake - occasional increases
+                if (Math.random() < 0.03) { // 3% chance per second to drink water
+                    water += 0.05 + Math.random() * 0.1;
+                    if (water > goals.water) water = goals.water;
+                    
+                    waterElement.textContent = water.toFixed(1);
+                    const waterPct = Math.min((water / goals.water) * 100, 100);
+                    waterProgress.style.width = `${waterPct}%`;
+                    waterPercent.textContent = `${Math.floor(waterPct)}%`;
+                    
+                    // Update goal progress
+                    waterGoalProgress.style.width = `${waterPct}%`;
+                    waterGoalPercent.textContent = `${Math.floor(waterPct)}%`;
+                    
+                    metrics.water = water;
+                }
+                
+                if (autoTracking.heart) {
+                    // Heart rate variability
+                    const baseRate = 72;
+                    const activityFactor = stepsIncrement * 0.5;
+                    const randomVariation = (Math.random() - 0.5) * 10;
+                    const timeFactor = Math.sin(minutes / 60 * Math.PI * 2) * 5;
+                    
+                    heartRate = baseRate + activityFactor + randomVariation + timeFactor;
+                    heartRate = Math.max(60, Math.min(heartRate, 120));
+                    
+                    heartRateElement.textContent = Math.floor(heartRate);
+                    
+                    // Track heart rate readings for average
+                    heartRateReadings.push(heartRate);
+                    if (heartRateReadings.length > 60) heartRateReadings.shift();
+                    
+                    const avgHeartRate = Math.floor(heartRateReadings.reduce((a, b) => a + b, 0) / heartRateReadings.length);
+                    heartRateAvg.textContent = `${Math.floor(avgHeartRate)} BPM`;
+                    
+                    // Update heart rate status
+                    if (heartRate < 70) {
+                        heartRateStatus.textContent = "Resting";
+                        heartRateStatus.style.color = "var(--success)";
+                    } else if (heartRate < 90) {
+                        heartRateStatus.textContent = "Normal";
+                        heartRateStatus.style.color = "var(--info)";
+                    } else if (heartRate < 110) {
+                        heartRateStatus.textContent = "Active";
+                        heartRateStatus.style.color = "var(--warning)";
+                    } else {
+                        heartRateStatus.textContent = "Intense";
+                        heartRateStatus.style.color = "var(--secondary)";
+                    }
+                    
+                    metrics.heartRate = heartRate;
+                }
+                
+                // Simulate sleep if not manually set
+                if (sleep === 0 && hours >= 22 || hours < 6) {
+                    sleep += 0.0005; // Simulate sleep time
+                    if (sleep > goals.sleep) sleep = goals.sleep;
+                    
+                    sleepElement.textContent = sleep.toFixed(1);
+                    const sleepPct = Math.min((sleep / goals.sleep) * 100, 100);
+                    sleepProgress.style.width = `${sleepPct}%`;
+                    sleepPercent.textContent = `${Math.floor(sleepPct)}%`;
+                    
+                    // Update goal progress
+                    sleepGoalProgress.style.width = `${sleepPct}%`;
+                    sleepGoalPercent.textContent = `${Math.floor(sleepPct)}%`;
+                    
+                    metrics.sleep = sleep;
+                }
+                
+            }, 1000);
+        }
+        
+        // Page navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find and activate the corresponding nav link
+            const navLinks = document.querySelectorAll('.nav-links a');
+            for (let i = 0; i < navLinks.length; i++) {
+                if (navLinks[i].getAttribute('onclick').includes(pageId)) {
+                    navLinks[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+        
+        // Toggle user dropdown
+        function toggleUserDropdown() {
+            document.getElementById('user-dropdown').classList.toggle('show');
+        }
+        
+        // Close dropdowns when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-profile') && !event.target.matches('.user-profile *')) {
+                const dropdowns = document.getElementsByClassName('user-dropdown');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+        
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function openLoginModal() {
+            closeModal('register-modal');
+            openModal('login-modal');
+            document.getElementById('user-dropdown').classList.remove('show');
+        }
+        
+        function openRegisterModal() {
+            closeModal('login-modal');
+            openModal('register-modal');
+            document.getElementById('user-dropdown').classList.remove('show');
+        }
+        
+        function openAddActivity() {
+            document.getElementById('activity-form').reset();
+            openModal('activity-modal');
+        }
+        
+        function openAddMeal() {
+            document.getElementById('meal-form').reset();
+            openModal('meal-modal');
+        }
+        
+        function openManualEntry(type) {
+            currentManualEntryType = type;
+            const modal = document.getElementById('manual-entry-modal');
+            const title = document.getElementById('manual-entry-title');
+            const label = document.getElementById('manual-entry-label');
+            const input = document.getElementById('manual-entry-value');
+            
+            // Set modal content based on type
+            switch(type) {
+                case 'steps':
+                    title.textContent = 'Manual Steps Entry';
+                    label.textContent = 'Steps';
+                    input.placeholder = 'Enter step count';
+                    input.value = metrics.steps || '';
+                    break;
+                case 'calories':
+                    title.textContent = 'Manual Calories Entry';
+                    label.textContent = 'Calories';
+                    input.placeholder = 'Enter calories burned';
+                    input.value = metrics.calories || '';
+                    break;
+                case 'water':
+                    title.textContent = 'Manual Water Entry';
+                    label.textContent = 'Water (liters)';
+                    input.placeholder = 'Enter water intake';
+                    input.value = metrics.water || '';
+                    input.step = '0.1';
+                    break;
+                case 'heart':
+                    title.textContent = 'Manual Heart Rate Entry';
+                    label.textContent = 'Heart Rate (BPM)';
+                    input.placeholder = 'Enter heart rate';
+                    input.value = metrics.heartRate || '';
+                    break;
+                case 'sleep':
+                    title.textContent = 'Manual Sleep Entry';
+                    label.textContent = 'Sleep (hours)';
+                    input.placeholder = 'Enter sleep duration';
+                    input.value = metrics.sleep || '';
+                    input.step = '0.1';
+                    break;
+                case 'weight':
+                    title.textContent = 'Manual Weight Entry';
+                    label.textContent = 'Weight (kg)';
+                    input.placeholder = 'Enter weight';
+                    input.value = metrics.weight || '';
+                    input.step = '0.1';
+                    break;
+            }
+            
+            openModal('manual-entry-modal');
+        }
+        
+        function openAddGoal() {
+            document.getElementById('goal-form').reset();
+            document.getElementById('goal-modal-title').textContent = 'Add New Goal';
+            document.getElementById('goal-end-date-group').style.display = 'none';
+            openModal('goal-modal');
+        }
+        
+        function openProfileSettings() {
+            // Set current profile data
+            if (currentUser) {
+                document.getElementById('profile-name').value = currentUser.name || '';
+                document.getElementById('profile-email').value = currentUser.email || '';
+                document.getElementById('profile-gender').value = currentUser.gender || '';
+                document.getElementById('profile-dob').value = currentUser.dob || '';
+                document.getElementById('profile-height').value = currentUser.height || '';
+                document.getElementById('profile-avatar').textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+            } else {
+                document.getElementById('profile-name').value = '';
+                document.getElementById('profile-email').value = '';
+                document.getElementById('profile-gender').value = '';
+                document.getElementById('profile-dob').value = '';
+                document.getElementById('profile-height').value = '';
+                document.getElementById('profile-avatar').textContent = 'G';
+            }
+            
+            openModal('profile-modal');
+        }
+        
+        function openNotificationSettings() {
+            // Set current notification preferences
+            document.getElementById('activity-reminders').checked = true;
+            document.getElementById('water-reminders').checked = true;
+            document.getElementById('goal-progress-notifications').checked = true;
+            document.getElementById('weekly-reports').checked = true;
+            document.getElementById('promotional-offers').checked = false;
+            
+            openModal('notifications-modal');
+        }
+        
+        function openChangePassword() {
+            alert('Change password functionality would be implemented here');
+        }
+        
+        function openHelpCenter() {
+            alert('Help center would be opened here');
+        }
+        
+        function openPrivacyPolicy() {
+            alert('Privacy policy would be displayed here');
+        }
+        
+        function openMetricSettings(metric) {
+            alert(`Settings for ${metric} would be shown here`);
+        }
+        
+        function openWeightTrend() {
+            alert('Weight trend chart would be displayed here');
+        }
+        
+        // Update goal value label based on type
+        function updateGoalValueLabel() {
+            const goalType = document.getElementById('goal-type').value;
+            const label = document.getElementById('goal-value-label');
+            
+            switch(goalType) {
+                case 'steps':
+                    label.textContent = 'Target Steps';
+                    break;
+                case 'calories':
+                    label.textContent = 'Target Calorie Deficit';
+                    break;
+                case 'water':
+                    label.textContent = 'Target Water Intake (liters)';
+                    break;
+                case 'sleep':
+                    label.textContent = 'Target Sleep Duration (hours)';
+                    break;
+                case 'workouts':
+                    label.textContent = 'Target Workouts';
+                    break;
+                case 'weight':
+                    label.textContent = 'Target Weight (kg)';
+                    break;
+                default:
+                    label.textContent = 'Target Value';
+            }
+        }
+        
+        // User functions
+        function loginUser() {
+            const email = document.querySelector('#login-form input[type="email"]').value;
+            const password = document.querySelector('#login-form input[type="password"]').value;
+            
+            // Simple validation
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            // Simulate login
+            currentUser = {
+                name: 'Test User',
+                email: email,
+                gender: 'male',
+                dob: '1990-01-01',
+                height: 175
+            };
+            
+            // Update UI
+            document.getElementById('username-display').textContent = `Hi, ${currentUser.name.split(' ')[0]}`;
+            document.querySelector('.user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.querySelector('.user-avatar').style.backgroundColor = getRandomColor();
+            
+            // Close modal
+            closeModal('login-modal');
+            
+            // Show success message
+            alert('Login successful!');
+        }
+        
+        function registerUser() {
+            const name = document.querySelector('#register-form input[type="text"]').value;
+            const email = document.querySelector('#register-form input[type="email"]').value;
+            const password = document.querySelectorAll('#register-form input[type="password"]')[0].value;
+            const confirmPassword = document.querySelectorAll('#register-form input[type="password"]')[1].value;
+            
+            // Simple validation
+            if (!name || !email || !password || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            // Simulate registration
+            currentUser = {
+                name: name,
+                email: email,
+                gender: '',
+                dob: '',
+                height: ''
+            };
+            
+            // Update UI
+            document.getElementById('username-display').textContent = `Hi, ${currentUser.name.split(' ')[0]}`;
+            document.querySelector('.user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.querySelector('.user-avatar').style.backgroundColor = getRandomColor();
+            
+            // Close modal and open login
+            closeModal('register-modal');
+            
+            // Show success message
+            alert('Registration successful! You are now logged in.');
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('username-display').textContent = 'Hi, Guest';
+            document.querySelector('.user-avatar').textContent = 'G';
+            document.querySelector('.user-avatar').style.backgroundColor = 'var(--primary)';
+            
+            // Close any open dropdown
+            document.getElementById('user-dropdown').classList.remove('show');
+            
+            // Show logout message
+            alert('You have been logged out');
+        }
+        
+        // Generate random color for avatar
+        function getRandomColor() {
+            const colors = ['#6C63FF', '#FF6584', '#42C2FF', '#4ADE80', '#F59E0B', '#38BDF8'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // Activity functions
+        function saveActivity() {
+            const type = document.getElementById('activity-type').value;
+            const duration = parseInt(document.getElementById('activity-duration').value);
+            const calories = parseInt(document.getElementById('activity-calories').value);
+            const notes = document.getElementById('activity-notes').value;
+            
+            if (!type || !duration || !calories) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Create activity object
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12;
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+            
+            const activityTypes = {
+                run: 'Running',
+                walk: 'Walking',
+                cycle: 'Cycling',
+                swim: 'Swimming',
+                yoga: 'Yoga',
+                gym: 'Gym Workout',
+                other: 'Activity'
+            };
+            
+            const newActivity = {
+                id: activities.length > 0 ? Math.max(...activities.map(a => a.id)) + 1 : 1,
+                type: type,
+                name: activityTypes[type] || 'Activity',
+                duration: duration,
+                calories: calories,
+                notes: notes,
+                time: timeString
+            };
+            
+            // Add to activities array
+            activities.push(newActivity);
+            
+            // Update calories
+            metrics.calories += calories;
+            document.getElementById('calories-count').textContent = Math.floor(metrics.calories).toLocaleString();
+            const caloriesPct = Math.min((metrics.calories / goals.calories) * 100, 100);
+            document.getElementById('calories-progress').style.width = `${caloriesPct}%`;
+            document.getElementById('calories-percent').textContent = `${Math.floor(caloriesPct)}%`;
+            
+            // Update goal progress
+            document.getElementById('calories-goal-progress').style.width = `${caloriesPct}%`;
+            document.getElementById('calories-goal-percent').textContent = `${Math.floor(caloriesPct)}%`;
+            
+            // Render activities
+            renderActivities();
+            
+            // Close modal
+            closeModal('activity-modal');
+            
+            // Show success message
+            alert('Activity saved successfully!');
+        }
+        
+        function editActivity(id) {
+            const activity = activities.find(a => a.id === id);
+            if (!activity) return;
+            
+            // Fill form with activity data
+            document.getElementById('activity-type').value = activity.type;
+            document.getElementById('activity-duration').value = activity.duration;
+            document.getElementById('activity-calories').value = activity.calories;
+            document.getElementById('activity-notes').value = activity.notes || '';
+            
+            // Set modal title
+            document.getElementById('goal-modal-title').textContent = 'Edit Activity';
+            
+            // Open modal
+            openModal('activity-modal');
+            
+            // TODO: Update save function to handle edits
+        }
+        
+        function deleteActivity(id) {
+            if (confirm('Are you sure you want to delete this activity?')) {
+                const index = activities.findIndex(a => a.id === id);
+                if (index !== -1) {
+                    // Subtract calories
+                    metrics.calories -= activities[index].calories;
+                    document.getElementById('calories-count').textContent = Math.floor(metrics.calories).toLocaleString();
+                    const caloriesPct = Math.min((metrics.calories / goals.calories) * 100, 100);
+                    document.getElementById('calories-progress').style.width = `${caloriesPct}%`;
+                    document.getElementById('calories-percent').textContent = `${Math.floor(caloriesPct)}%`;
+                    
+                    // Update goal progress
+                    document.getElementById('calories-goal-progress').style.width = `${caloriesPct}%`;
+                    document.getElementById('calories-goal-percent').textContent = `${Math.floor(caloriesPct)}%`;
+                    
+                    // Remove activity
+                    activities.splice(index, 1);
+                    
+                    // Render activities
+                    renderActivities();
+                    
+                    // Show success message
+                    alert('Activity deleted successfully!');
+                }
+            }
+        }
+        
+        // Meal functions
+        function saveMeal() {
+            const type = document.getElementById('meal-type').value;
+            const name = document.getElementById('meal-name').value;
+            const calories = parseInt(document.getElementById('meal-calories').value);
+            const protein = parseInt(document.getElementById('meal-protein').value);
+            const carbs = parseInt(document.getElementById('meal-carbs').value);
+            const fat = parseInt(document.getElementById('meal-fat').value);
+            const notes = document.getElementById('meal-notes').value;
+            
+            if (!type || !name || !calories || !protein || !carbs || !fat) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Create meal object
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12;
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+            
+            const newMeal = {
+                id: nutrition.meals.length > 0 ? Math.max(...nutrition.meals.map(m => m.id)) + 1 : 1,
+                type: type,
+                name: name,
+                calories: calories,
+                protein: protein,
+                carbs: carbs,
+                fat: fat,
+                notes: notes,
+                time: timeString
+            };
+            
+            // Add to meals array
+            nutrition.meals.push(newMeal);
+            
+            // Calculate nutrition totals
+            calculateNutritionTotals();
+            
+            // Render meals
+            renderMeals();
+            
+            // Close modal
+            closeModal('meal-modal');
+            
+            // Show success message
+            alert('Meal saved successfully!');
+        }
+        
+        function editMeal(id) {
+            const meal = nutrition.meals.find(m => m.id === id);
+            if (!meal) return;
+            
+            // Fill form with meal data
+            document.getElementById('meal-type').value = meal.type;
+            document.getElementById('meal-name').value = meal.name;
+            document.getElementById('meal-calories').value = meal.calories;
+            document.getElementById('meal-protein').value = meal.protein;
+            document.getElementById('meal-carbs').value = meal.carbs;
+            document.getElementById('meal-fat').value = meal.fat;
+            document.getElementById('meal-notes').value = meal.notes || '';
+            
+            // Set modal title
+            document.getElementById('goal-modal-title').textContent = 'Edit Meal';
+            
+            // Open modal
+            openModal('meal-modal');
+            
+            // TODO: Update save function to handle edits
+        }
+        
+        function deleteMeal(id) {
+            if (confirm('Are you sure you want to delete this meal?')) {
+                const index = nutrition.meals.findIndex(m => m.id === id);
+                if (index !== -1) {
+                    // Remove meal
+                    nutrition.meals.splice(index, 1);
+                    
+                    // Calculate nutrition totals
+                    calculateNutritionTotals();
+                    
+                    // Render meals
+                    renderMeals();
+                    
+                    // Show success message
+                    alert('Meal deleted successfully!');
+                }
+            }
+        }
+        
+        // Manual entry functions
+        function saveManualEntry() {
+            const value = parseFloat(document.getElementById('manual-entry-value').value);
+            
+            if (isNaN(value)) {
+                alert('Please enter a valid number');
+                return;
+            }
+            
+            switch(currentManualEntryType) {
+                case 'steps':
+                    metrics.steps = value;
+                    document.getElementById('steps-count').textContent = Math.floor(value).toLocaleString();
+                    const stepsPct = Math.min((value / goals.steps) * 100, 100);
+                    document.getElementById('steps-progress').style.width = `${stepsPct}%`;
+                    document.getElementById('steps-percent').textContent = `${Math.floor(stepsPct)}%`;
+                    document.getElementById('steps-goal-progress').style.width = `${stepsPct}%`;
+                    document.getElementById('steps-goal-percent').textContent = `${Math.floor(stepsPct)}%`;
+                    break;
+                case 'calories':
+                    metrics.calories = value;
+                    document.getElementById('calories-count').textContent = Math.floor(value).toLocaleString();
+                    const caloriesPct = Math.min((value / goals.calories) * 100, 100);
+                    document.getElementById('calories-progress').style.width = `${caloriesPct}%`;
+                    document.getElementById('calories-percent').textContent = `${Math.floor(caloriesPct)}%`;
+                    document.getElementById('calories-goal-progress').style.width = `${caloriesPct}%`;
+                    document.getElementById('calories-goal-percent').textContent = `${Math.floor(caloriesPct)}%`;
+                    break;
+                case 'water':
+                    metrics.water = value;
+                    document.getElementById('water-count').textContent = value.toFixed(1);
+                    const waterPct = Math.min((value / goals.water) * 100, 100);
+                    document.getElementById('water-progress').style.width = `${waterPct}%`;
+                    document.getElementById('water-percent').textContent = `${Math.floor(waterPct)}%`;
+                    document.getElementById('water-goal-progress').style.width = `${waterPct}%`;
+                    document.getElementById('water-goal-percent').textContent = `${Math.floor(waterPct)}%`;
+                    break;
+                case 'heart':
+                    metrics.heartRate = value;
+                    document.getElementById('heart-rate').textContent = Math.floor(value);
+                    updateHeartRateStatus(value);
+                    break;
+                case 'sleep':
+                    metrics.sleep = value;
+                    document.getElementById('sleep-count').textContent = value.toFixed(1);
+                    const sleepPct = Math.min((value / goals.sleep) * 100, 100);
+                    document.getElementById('sleep-progress').style.width = `${sleepPct}%`;
+                    document.getElementById('sleep-percent').textContent = `${Math.floor(sleepPct)}%`;
+                    document.getElementById('sleep-goal-progress').style.width = `${sleepPct}%`;
+                    document.getElementById('sleep-goal-percent').textContent = `${Math.floor(sleepPct)}%`;
+                    break;
+                case 'weight':
+                    metrics.weight = value;
+                    updateWeightDisplay();
+                    break;
+            }
+            
+            closeModal('manual-entry-modal');
+            alert('Entry saved successfully!');
+        }
+        
+        function updateHeartRateStatus(rate) {
+            const heartRateStatus = document.getElementById('heart-rate-status');
+            
+            if (rate < 70) {
+                heartRateStatus.textContent = "Resting";
+                heartRateStatus.style.color = "var(--success)";
+            } else if (rate < 90) {
+                heartRateStatus.textContent = "Normal";
+                heartRateStatus.style.color = "var(--info)";
+            } else if (rate < 110) {
+                heartRateStatus.textContent = "Active";
+                heartRateStatus.style.color = "var(--warning)";
+            } else {
+                heartRateStatus.textContent = "Intense";
+                heartRateStatus.style.color = "var(--secondary)";
+            }
+        }
+        
+        // Goal functions
+        function saveGoal() {
+            const type = document.getElementById('goal-type').value;
+            const value = parseFloat(document.getElementById('goal-value').value);
+            const timeframe = document.getElementById('goal-timeframe').value;
+            const endDate = document.getElementById('goal-end-date').value;
+            const description = document.getElementById('goal-description').value;
+            
+            if (!type || isNaN(value)) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Update goal
+            goals[type] = value;
+            
+            // Update UI based on goal type
+            switch(type) {
+                case 'steps':
+                    const stepsPct = Math.min((metrics.steps / value) * 100, 100);
+                    document.getElementById('steps-goal-progress').style.width = `${stepsPct}%`;
+                    document.getElementById('steps-goal-percent').textContent = `${Math.floor(stepsPct)}%`;
+                    break;
+                case 'calories':
+                    const caloriesPct = Math.min((metrics.calories / value) * 100, 100);
+                    document.getElementById('calories-goal-progress').style.width = `${caloriesPct}%`;
+                    document.getElementById('calories-goal-percent').textContent = `${Math.floor(caloriesPct)}%`;
+                    break;
+                case 'water':
+                    const waterPct = Math.min((metrics.water / value) * 100, 100);
+                    document.getElementById('water-goal-progress').style.width = `${waterPct}%`;
+                    document.getElementById('water-goal-percent').textContent = `${Math.floor(waterPct)}%`;
+                    break;
+                case 'sleep':
+                    const sleepPct = Math.min((metrics.sleep / value) * 100, 100);
+                    document.getElementById('sleep-goal-progress').style.width = `${sleepPct}%`;
+                    document.getElementById('sleep-goal-percent').textContent = `${Math.floor(sleepPct)}%`;
+                    break;
+            }
+            
+            closeModal('goal-modal');
+            alert('Goal saved successfully!');
+        }
+        
+        function editGoal(type) {
+            // Fill form with goal data
+            document.getElementById('goal-type').value = type;
+            document.getElementById('goal-value').value = goals[type];
+            
+            // Set modal title
+            document.getElementById('goal-modal-title').textContent = 'Edit Goal';
+            
+            // Update label
+            updateGoalValueLabel();
+            
+            // Open modal
+            openModal('goal-modal');
+        }
+        
+        function deleteGoal(type) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                // Reset goal to default
+                const defaults = {
+                    steps: 10000,
+                    calories: 2000,
+                    water: 2.5,
+                    sleep: 8,
+                    workouts: 5,
+                    weight: 68
+                };
+                
+                goals[type] = defaults[type];
+                
+                // Update UI if needed
+                alert('Goal reset to default value');
+            }
+        }
+        
+        // Profile functions
+        function saveProfile() {
+            const name = document.getElementById('profile-name').value;
+            const email = document.getElementById('profile-email').value;
+            const gender = document.getElementById('profile-gender').value;
+            const dob = document.getElementById('profile-dob').value;
+            const height = document.getElementById('profile-height').value;
+            
+            if (!name || !email) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Update current user
+            if (currentUser) {
+                currentUser.name = name;
+                currentUser.email = email;
+                currentUser.gender = gender;
+                currentUser.dob = dob;
+                currentUser.height = height;
+            } else {
+                currentUser = {
+                    name: name,
+                    email: email,
+                    gender: gender,
+                    dob: dob,
+                    height: height
+                };
+            }
+            
+            // Update UI
+            document.getElementById('username-display').textContent = `Hi, ${currentUser.name.split(' ')[0]}`;
+            document.querySelector('.user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            
+            closeModal('profile-modal');
+            alert('Profile updated successfully!');
+        }
+        
+        // Notification functions
+        function saveNotificationSettings() {
+            const activityReminders = document.getElementById('activity-reminders').checked;
+            const waterReminders = document.getElementById('water-reminders').checked;
+            const goalProgress = document.getElementById('goal-progress-notifications').checked;
+            const weeklyReports = document.getElementById('weekly-reports').checked;
+            const promotionalOffers = document.getElementById('promotional-offers').checked;
+            
+            // In a real app, we would save these preferences to a server
+            closeModal('notifications-modal');
+            alert('Notification preferences saved!');
+        }
+        
+        // Settings functions
+        function toggleDarkMode() {
+            const isDarkMode = document.getElementById('dark-mode-toggle').checked;
+            alert(`Dark mode would be ${isDarkMode ? 'enabled' : 'disabled'}`);
+            // In a real app, we would update the theme here
+        }
+        
+        function toggleMetricUnits() {
+            const isMetric = document.getElementById('metric-units-toggle').checked;
+            alert(`Metric units would be ${isMetric ? 'enabled' : 'disabled'}`);
+            // In a real app, we would update all measurements here
+        }
+        
+        function toggleGlobalAutoTracking() {
+            const isEnabled = document.getElementById('auto-tracking-toggle').checked;
+            alert(`Auto tracking would be ${isEnabled ? 'enabled' : 'disabled'} globally`);
+            // In a real app, we would update all auto-tracking settings here
+        }
+        
+        // Utility functions
+        function toggleAutoTracking(metric) {
+            autoTracking[metric] = !autoTracking[metric];
+            const button = document.getElementById(`${metric}-auto-btn`);
+            
+            if (autoTracking[metric]) {
+                button.innerHTML = '<i class="fas fa-sync"></i><span>Auto On</span>';
+                button.classList.add('btn-success');
+                button.classList.remove('btn-primary');
+            } else {
+                button.innerHTML = '<i class="fas fa-sync"></i><span>Auto Track</span>';
+                button.classList.add('btn-primary');
+                button.classList.remove('btn-success');
+            }
+        }
+        
+        function addWater() {
+            metrics.water += 0.25;
+            if (metrics.water > goals.water) metrics.water = goals.water;
+            
+            document.getElementById('water-count').textContent = metrics.water.toFixed(2);
+            const waterPct = Math.min((metrics.water / goals.water) * 100, 100);
+            document.getElementById('water-progress').style.width = `${waterPct}%`;
+            document.getElementById('water-percent').textContent = `${Math.floor(waterPct)}%`;
+            
+            // Update goal progress
+            document.getElementById('water-goal-progress').style.width = `${waterPct}%`;
+            document.getElementById('water-goal-percent').textContent = `${Math.floor(waterPct)}%`;
+        }
+        
+        function logSleep() {
+            const hours = prompt('How many hours did you sleep?', '8');
+            if (hours && !isNaN(hours)) {
+                metrics.sleep = parseFloat(hours);
+                document.getElementById('sleep-count').textContent = metrics.sleep.toFixed(1);
+                const sleepPct = Math.min((metrics.sleep / goals.sleep) * 100, 100);
+                document.getElementById('sleep-progress').style.width = `${sleepPct}%`;
+                document.getElementById('sleep-percent').textContent = `${Math.floor(sleepPct)}%`;
+                
+                // Update goal progress
+                document.getElementById('sleep-goal-progress').style.width = `${sleepPct}%`;
+                document.getElementById('sleep-goal-percent').textContent = `${Math.floor(sleepPct)}%`;
+            }
+        }
+        
+        function socialLogin(provider) {
+            alert(`Logging in with ${provider.charAt(0).toUpperCase() + provider.slice(1)} would be implemented here`);
+        }
+    </script>
+</body>
+</html>
